@@ -16,9 +16,10 @@ def get_data(name):
 
 print 'START:', time.time()
 
-secondsinday=60
+secondsinday=60*60*24
+offset=0
 
 for i in range(0,4):
-        scheduler.enter(10*i+10, 1, get_data, (str(i)))
+        scheduler.enter(offset+i*secondsinday, 1, get_data, (str(i)))
 
 scheduler.run()
