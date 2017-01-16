@@ -9,6 +9,14 @@ Bdate= datetime.datetime.strptime(bdate,'%d-%m-%Y') #Convert bond date into date
 data = np.genfromtxt(bdate+'.csv', delimiter=',', dtype=None) #Read entire CSV into array
 data = [el for el in data if el[0]=='Canada' and datetime.datetime.strptime(el[2],'%Y-%b-%d').year<2022] #Keep only the Canada bonds up to 2022
 
+
+#If two bonds have the same maturity, keep only the one appearing first in the list
+seen = set()
+data = [el for el in data if not (el[2] in seen or seen.add(el[2]))]
+
+#For debugging keep track of interpolated coupon rates
+crates = []
+
 sdata= [] #Structured Data (years to maturity, coupon, bond price)
 for el in data:
 	edate=datetime.datetime.strptime(el[2],'%Y-%b-%d') #Datetime object for current bond maturity
@@ -55,24 +63,28 @@ for el in data:
 					d=(d2-cdate).total_seconds()/(d2-d1).total_seconds()
 					zycdate=(1-d)*zy2+d*zy1 #this is z-y rate interpolated to coupon date
 					break
+			crates.append([cdate,zycdate])
 			diffc= (cdate-Bdate).total_seconds()/31536000
-			cf=coupon/2*np.exp(zycdate*diffc)#discounted cashflow
+			cf=(coupon/2)*np.exp(-zycdate*diffc)#discounted cashflow (Ask Jesse..)		        
 			dpdim=dpdim-cf
 			diff2=diff2-0.5	#go back 6 months and discout that coupon
 		
 		zyield=-np.log(dpdim/(100+coupon/2))/diff
 	sdata.append([edate, diff, coupon, dirtyprice, zyield])
+#Remove duplicates in rates for coupons
+seen2 = set()
+crates = [el for el in crates if not (el[0] in seen2 or seen2.add(el[0]))]
 	
 dates= [el[0] for el in sdata]
 yields = [el[4] for el in sdata]
-plt.plot(dates,yields)
+
+plt.plot(dates,yields, 'b*')
+plt.plot([el[0] for el in crates],[el[1] for el in crates],'r.')
+for el in crates:
+	print el[0], el[1]
 plt.gcf().autofmt_xdate()
 plt.show()
 
-
-
-#
-#TODO: Find any duplicate time to maturity and randomly keep one while discarding the others
 #TODO: After 2022 we only have bond data for 1 yr increments, so we can't calculate half year coupon payments at zero yield rates. 
 
 
