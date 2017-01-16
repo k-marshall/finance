@@ -1,9 +1,9 @@
 import numpy as np
 import csv
 import datetime
+import matplotlib.pyplot as plt
 
-
-bdate= '13-01-2017' #Date of Bond Data
+bdate= '09-01-2017' #Date of Bond Data
 Bdate= datetime.datetime.strptime(bdate,'%d-%m-%Y') #Convert bond date into datetime object
 
 data = np.genfromtxt(bdate+'.csv', delimiter=',', dtype=None) #Read entire CSV into array
@@ -40,6 +40,7 @@ for el in data:
 				cdate=edate.replace(month=m)
 			#calculate zero yield at that coupon payment by linear interpolation
 			#first look for zero yield closest to cdate in previously studied bonds
+			
 			for em in sdata:
 				if em[0]==cdate:
 					zycdate=em[4] #z-y rate was already known
@@ -62,11 +63,18 @@ for el in data:
 		zyield=-np.log(dpdim/(100+coupon/2))/diff
 	sdata.append([edate, diff, coupon, dirtyprice, zyield])
 	
+dates= [el[0] for el in sdata]
+yields = [el[4] for el in sdata]
+plt.plot(dates,yields)
+plt.gcf().autofmt_xdate()
+plt.show()
+
 
 
 #
 #TODO: Find any duplicate time to maturity and randomly keep one while discarding the others
 #TODO: After 2022 we only have bond data for 1 yr increments, so we can't calculate half year coupon payments at zero yield rates. 
+
 
 
 
