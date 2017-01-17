@@ -8,7 +8,7 @@ def bootstrap(bdate):
 #	bdate= '10-01-2017' #Date of Bond Data
 	Bdate= datetime.datetime.strptime(bdate,'%d-%m-%Y') #Convert bond date into datetime object
 	
-	data = np.genfromtxt(bdate+'.csv', delimiter=',', dtype=None) #Read entire CSV into array
+	data = np.genfromtxt('./data/'+bdate+'.csv', delimiter=',', dtype=None) #Read entire CSV into array
 	data = [el for el in data if el[0]=='Canada' and datetime.datetime.strptime(el[2],'%Y-%b-%d').year<2022] #Keep only the Canada bonds up to 2022
 	
 	
