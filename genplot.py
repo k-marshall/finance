@@ -13,7 +13,7 @@ Yields = []
 Forwards = []
 for tind, bdate in enumerate(files):
     feb1 = datetime.datetime(2017,02, 01)
-    period = 182.5
+    period = 182.5 #in days
 
     dates,yields=bootstrap(bdate)
 
@@ -29,12 +29,12 @@ for tind, bdate in enumerate(files):
         mlogP.append((el-t).days/365.0 * iyields[idx])
 
     forwards = []
-    forwards.append((mlogP[1]-mlogP[0])/period)
+    forwards.append((mlogP[1]-mlogP[0])/period*365)
 
     for idx in np.arange(1,len(mlogP)-1,1):
-        forwards.append((mlogP[idx+1]-mlogP[idx-1])/(2*period))
+        forwards.append((mlogP[idx+1]-mlogP[idx-1])/(2*period)*365)
 
-    forwards.append((mlogP[-1]-mlogP[-2])/period)
+    forwards.append((mlogP[-1]-mlogP[-2])/period*365)
     Forwards.append(forwards)
 
     #plt.plot(dates,yields,'.') #Raw data
