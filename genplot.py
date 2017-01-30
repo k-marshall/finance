@@ -50,9 +50,15 @@ Xijforward= np.array(map(np.diff,[map(np.log,x) for x in Forwards]))
 ycov = np.cov(Xijyield)
 fcov  = np.cov(Xijforward)
 
-yeigs= np.linalg.eigvals(ycov).real
-yeigs.sort()
-print yeigs
+eigval, eigvec= np.linalg.eigh(ycov)
+
+sortindex = np.argsort(eigval)[::-1]
+evals = eigval[sortindex]
+print evals[0:3]
+plt.figure()
+plt.plot(eigvec[:,sortindex[0]],'b.') #parallel shift
+plt.plot(eigvec[:,sortindex[1]],'r.') #twist
+plt.plot(eigvec[:,sortindex[2]],'g.') #butterfly
 
 plt.gcf().autofmt_xdate()
 plt.show()
